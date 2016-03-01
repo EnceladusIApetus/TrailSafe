@@ -1,0 +1,42 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+
+# Please note that this file is written to be used with dhcpcd
+# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+
+auto lo
+iface lo inet loopback
+
+iface eth0 inet manual
+
+allow-hotplug wlan0
+iface wlan0 inet manual
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+allow-hotplug wlan1
+iface wlan1 inet static
+    address 192.168.1.1
+    netmask 255.255.255.0
+
+iface wlan0-SAIG_WIFI inet dhcp
+    wpa-psk a24075a83be50d57c6fd700dfe5c650164a7d2cbc9938a666848c9a633abad16
+    wpa-ssid SAIG_WIFI
+    wireless-channel auto
+
+
+iface wlan0-WiFi_Gome inet dhcp
+    wpa-psk a9056f42b1b4d6c205c2ce5153344cdf471c29f2f666ee781ab3aeec53dabe4e
+    wpa-ssid WiFi_Home
+    wireless-channel auto
+
+iface wlan0-TrailSafe01 inet dhcp
+    wpa-psk 00d15f3a0fcf40a874ecb21aad5a2c5ed6c723c2a12736b38fbaa1bc2385c0fd
+    wpa-ssid TrailSafe01
+    wireless-channel auto
+
+iface wlan0-TrailSafe02 inet dhcp
+    wpa-psk bf4947b7cb2a907f6573732889456f0c69c168a589a3e9a29819219488daed0b
+    wpa-ssid TrailSafe02
+    wireless-channel auto
