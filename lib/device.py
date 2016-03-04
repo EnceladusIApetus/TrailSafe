@@ -1,8 +1,9 @@
 import jsonfile
 
 def get_config():
-	jsonfile.open_file('home/pi/TrailSafe/congif/config.ini');
-	return jsonfile.read()
+	reader = jsonfile.JSONFile()
+	reader = reader.open_file('home/pi/TrailSafe/congif/config.ini');
+	return reader.read()
 
 def get_id():
 	return get_config()['id']

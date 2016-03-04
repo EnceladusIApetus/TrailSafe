@@ -1,8 +1,9 @@
 import jsonfile
 
 def open_file():
-	jsonfile.open_file('/home/pi/TraiSafe/config/code_description.ini')
-	return jsonfile.read()
+	reader = jsonfile.JSONFile()
+	reader = reader.open_file('/home/pi/TraiSafe/config/code_description.ini')
+	return reader.read()
 
 def get_description(code):
 	description = open_file()

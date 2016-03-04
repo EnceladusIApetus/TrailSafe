@@ -1,6 +1,6 @@
 from wifi import Cell, Scheme
-import socket
-from lib import jsonfile, network, json, header
+import socket, json
+from lib import jsonfile, network, header
 
 global port
 port = None
@@ -39,8 +39,9 @@ def createScheme(interface, cell, ssidName, passkey):
 
 def connectNode():
     global port
-    jsonfile.open_file('/home/pi/TrailSafe/config/config.ini')
-    info = jsonfile.read()
+    config_reader = jsonfile.JSONFile()
+    config_reader = config_reader.open_file('/home/pi/TrailSafe/config/config.ini')
+    info = config_reader.read()
     deviceSSID = info['device-SSID']
     passkey = info['passkey']
     interface = info['client-interface']
@@ -76,5 +77,5 @@ def connectNode():
     scheme = Scheme.find(interface, highSignal.ssid)
     scheme.activate()
 
-    jsonfile.update({'node-defaultGateway': network.getDefaultGateway(interface)})
+    config_reader.update({'node-defaultGateway': network.getDefaultGateway(interface)})
 
