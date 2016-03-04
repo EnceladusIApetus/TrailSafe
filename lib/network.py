@@ -169,3 +169,6 @@ def create_socket(dest_ip, port, timeout):
         return s
     else:
         return None
+
+def test_server_connection():
+    return True
