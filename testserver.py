@@ -3,7 +3,7 @@ import socket
 import os
 import sys
 import json
-import header
+from lib import header
 
 
 self_ip = '192.168.2.1'

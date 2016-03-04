@@ -8,5 +8,5 @@ def get_description(code):
 	description = open_file()
 	if description[code] is None:
 		return None
-	else
+	else:
 		return description[code]

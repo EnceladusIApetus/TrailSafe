@@ -115,7 +115,7 @@ def sendFile(dest_ip, path, buff_size, file_name, recv_id):
         return None
 
 def send_text(dest_ip, port, timeout, text):
-    return send_text(dest_ip, port, timeout, text, 'SV'):
+    return send_text(dest_ip, port, timeout, text, 'SV')
 
 def send_text(dest_ip, port, timeout, text, recv_id):
     s = create_socket(dest_ip, port, timeout)
