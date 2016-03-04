@@ -1,6 +1,6 @@
 from wifi import Cell, Scheme
 import socket
-from lib import jsonfile, network
+from lib import jsonfile, network, json, header
 
 global port
 port = None
@@ -9,8 +9,10 @@ def testInternetConnection():
     s = createConnection()
         
     if s is not None:
-        s.send('testInternetConnection')
-        if s.recv(1024) == '1':
+        s.send(header.sendCode('60'))
+        response = json.loads(s.recv(1024))
+        print 'log: host->' + response['process-description']
+        if response['process-code'] == 61:
             print 'Server connection successful.'
             return True
         else:
