@@ -2,6 +2,8 @@ import socket
 import struct
 import os
 import sys
+import header
+import json
 
 def getDefaultGateway_hex(interface):
     route = "/proc/net/route"
@@ -19,52 +21,48 @@ def getDefaultGateway(interface):
     return socket.inet_ntoa(struct.pack('<L', ip_hex))
 
 
-def receiveFile(c, path, buff_size):
-    print 'log: request file name'
-    c.send('request file name')
-    fileName = c.recv(1024)
-    print 'log: file name is ' + fileName
-    print 'log: request file size'
-    c.send('request file size')
-    fileSize = int(c.recv(1024))
-    print 'log: file size is ' + str(fileSize)
-    print 'log: request buffer size'
-    c.send('request buffer size')
-    buff_size = int(c.recv(1024))
+def receiveFile(c, path, buff_size, header):
+    header = json.loads(header)
+    file_name = header['file-name']
+    file_size = header['file-size']
+    buff_size = header['buffer-size']
+    print 'log: file name is ' + file_name
+    print 'log: file size is ' + str(file_size)
     print 'log: buffer size is ' + str(buff_size)
 
-    receiveData(c, path, buff_size, fileSize, fileName)
-    checkFile(c, path, buff_size, fileSize, fileName, 10)
+    receiveData(c, path, buff_size, file_size, file_name)
+    checkFile(c, path, buff_size, file_size, file_name, 10)
 
-    f = open(path + fileName, 'r')
+    f = open(path + file_name, 'r')
     print 'log: total size is ' + str(os.fstat(f.fileno()).st_size)
     print '\n'
     f.close()
     c.close()
 
-def checkFile(c, path, buff_size, fileSize, fileName, tryout):
-    f = open(path + fileName, 'r')
-    while (os.fstat(f.fileno()).st_size < fileSize and tryout > 0):
-	c.send('file is corrupt')
-	print 'log: file is corrupt'
-	print 'log: received ' + str(os.fstat(f.fileno()).st_size)
-	receiveData(c, path, buff_size, fileSize, fileName)
-	tryout -= 1
-    if tryout <= 0:
-	c.send('stop sending')
-	print 'log: stop receiving progress due to an error.'
-    else:
-	c.send('success')
-	print 'log: receiving progress complete.'
+def checkFile(c, path, buff_size, file_size, file_name, tryout):
+    f = open(path + file_name, 'r')
+    while (os.fstat(f.fileno()).st_size < file_size and tryout > 0):
+    	c.send(header.sendCode('51'))
+    	print 'log: file is corrupt'
+    	print 'log: received ' + str(os.fstat(f.fileno()).st_size)
+    	receiveData(c, path, buff_size, file_size, file_name)
+    	tryout -= 1
+        if tryout <= 0:
+    	   c.send(header.sendCode('24'))
+    	   print 'log: stop receiving progress due to an error.'
+        else:
+    	   c.send(header.sendCode('11'))
+    	print 'log: receiving progress complete.'
  
-def receiveData(c, path, buff_size, fileSize, fileName):
-    f = open(path + fileName, 'w+')
+def receiveData(c, path, buff_size, file_size, file_name):
+    f = open(path + file_name, 'w+')
+    c.send(header.sendCode('310'))
     print 'log: receiving data'
     data_buffer = None
-    while(fileSize > 0):
+    while(file_size > 0):
         data_buffer = c.recv(buff_size)
         f.write(data_buffer)
-        fileSize -= buff_size
+        file_size -= buff_size
     f.close()
 
 def sendData(s, buff_size, size, path):
@@ -75,59 +73,69 @@ def sendData(s, buff_size, size, path):
         s.send(data_buffer)
         size -= buff_size
     s.settimeout(5)
-    statusCode = s.recv(1024)
+    response = s.recv(1024)
     target_file.close()
-    return statusCode
+    return response
 
-def validateSending(s, buff_size, size, path, statusCode):
-    if statusCode in 'file is corrupt':
-        statusCode = sendData(s, buff_size, size, path)
-        while(statusCode in 'file is corrupt' or statusCode in 'stop sending'):
-            statusCode = sendData(s, buff_size, size, path)
+def validateSending(s, buff_size, size, path, response):
+    response = json.loads(response)
+    print 'log: host->' + response['process-description']
+    if response['process-code'] == 51:
+        response = sendData(s, buff_size, size, path)
+        while(response['process-code'] == 51 or response['process-code'] == 24):
+            print 'log: host->' + response['process-description']
+            response = sendData(s, buff_size, size, path)
+    return response
 
-def sendFile(dest_ip, path, buff_size, fileName):
+def sendFile(path, buff_size, file_name):
+    sendFile(getDefaultGateway('wlan0'), path, buff_size, file_name, 'SV')
+
+def sendFile(dest_ip, path, buff_size, file_name, recv_id):
     target_file = open(path, 'r')
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(5)
     port = 12345
     s.connect((dest_ip, port))
-
     print 'log: host connected'
-    s.send('send file')
-    print 'log: host->' + s.recv(1024)
-    print 'log: send file name'
-    s.send(fileName)
-    print 'log: host->' + s.recv(1024)
 
     size = 0
     for line in target_file:
         size += len(line)
     target_file.close()
 
-    print 'log: send file size'
-    s.send(str(size))
-    print 'log: host->' + s.recv(1024)
-    print 'log: send buffer size'
-    s.send(str(buff_size))
+    s.send(header.sendFile(recv_id, file_name, buff_size, size))
 
-    statusCode = sendData(s, buff_size, size, path)
-    validateSending(s, buff_size, size, path, statusCode)
+    response = json.loads(s.recv(1024))
+    print 'log: host->' + response['process-description']
+
+    if response['process-code'] == 310:
+        response = sendData(s, buff_size, size, path)
+        return validateSending(s, buff_size, size, path, statusCode)
+    else:
+        return None
 
 def send_text(dest_ip, port, timeout, text):
+    return send_text(dest_ip, port, timeout, text, 'SV'):
+
+def send_text(dest_ip, port, timeout, text, recv_id):
     s = create_socket(dest_ip, port, timeout)
     try:
         if s is not None:
-            s.send('forward text')
-            if s.recv(1024) in 'request text':
+            s.send(header.sendText(recv_id))
+            response = json.loads(s.recv(1024))
+            print 'log: host->' + response['process-description']
+            if response['process-code'] == 310:
                 s.send(text)
                 response = s.recv(1024)
+                s.close()
                 return response
     except:
         print 'log: sending text fail'
+        s.close()
     return None
 
-def forward_text(c, port, timeout):
-    c.send('request text')
+def forward_text(c, port, timeout, header):
+    c.send(header.sendCode('310'))
     print 'log: request text'
     text = c.recv(1024)
     print 'log: text received'
@@ -135,18 +143,23 @@ def forward_text(c, port, timeout):
     try:
         if s is not None:
             print 'log: connected to node'
-            s.send('forward text')
+            s.send(header.sendCode(header))
             print 'log: request to forward text'
-            response = s.recv(1024)
-            if response in 'request text':
+            response = json.loads(s.recv(1024))
+            print 'log: host->' + response['process-description']
+            if response['process-code'] == 310:
                 print 'log: forwarding'
                 s.send(text)
-                response = s.recv(1024)
+                response = json.loads(s.recv(1024))
                 print 'log: forwarding completed. send back response'
                 c.send(response)
-                return response
+            s.close()
+            c.close()
+            return response
     except:
         print 'log: forwarding failed'
+        s.close()
+        c.close()
     return None
 
 def create_socket(dest_ip, port, timeout):
