@@ -1,34 +1,33 @@
 import json
 
-class JSONFile():
-	f = None
-	paths = None
+class JSONFile:
+
+	def __init__(self):
+		self.f = None
+		self.paths = None
 
 	def new_file(self, path):
-		global f, paths
-		f = open(path, 'w')
-		paths = path
+		self.f = open(path, 'w')
+		self.paths = path
 
 	def open_file(self, path):
-		global f, paths
 		try:
-			f = open(path, 'r')
-			paths = path
+			self.f = open(path, 'r')
+			self.paths = path
 			return True
 		except:
 			return False
 
 	def read(self):
-		global f;
 		try:
-			x = json.load(f)
+			x = json.load(self.f)
 			self.reopen()
 			return x
 		except:
 			return None
 
 	def update(self, obj):
-		x = read()
+		x = self.read()
 
 		if x is not None:
 			x.update(obj)
@@ -38,18 +37,16 @@ class JSONFile():
 		write(x)
 
 	def reopen(self):
-		global f, paths
-		f.close()
-		f = open(paths, 'r')
+		self.f.close()
+		self.f = open(self.paths, 'r')
 
 	def write(self, obj):
-		global f
-		f = open(paths, 'w')
-		json.dump(obj, f, sort_keys=True, indent=2)
-		f.close()
-		reopen()
+		self.f = open(self.paths, 'w')
+		json.dump(obj, self.f, sort_keys=True, indent=2)
+		self.f.close()
+		self.reopen()
 
 	def delete(self, key):
-		x = read()
+		x = self.read()
 		del x[key]
 		write(x)

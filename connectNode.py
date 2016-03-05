@@ -40,7 +40,7 @@ def createScheme(interface, cell, ssidName, passkey):
 def connectNode():
     global port
     config_reader = jsonfile.JSONFile()
-    config_reader = config_reader.open_file('/home/pi/TrailSafe/config/config.ini')
+    config_reader.open_file('/home/pi/TrailSafe/config/config.ini')
     info = config_reader.read()
     deviceSSID = info['device-SSID']
     passkey = info['passkey']
