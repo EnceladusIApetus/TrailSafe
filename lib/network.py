@@ -118,10 +118,11 @@ def send_text(dest_ip, port, timeout, text, recv_id):
         if s is not None:
             s.send(header.sendText(recv_id))
             response = json.loads(s.recv(1024))
-            print 'log: host->' + response['process-description']
-            if response['process-code'] == 310:
+            print 'host: ' + response['process-description']
+            if int(response['process-code']) == 310:
                 s.send(text)
-                response = s.recv(1024)
+                response = json.loads(s.recv(1024))
+                print 'host: ' + response['process-description']
                 s.close()
                 return response
     except:
