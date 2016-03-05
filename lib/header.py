@@ -1,5 +1,5 @@
 import json
-import device_info
+import device
 import code_descriptor
 
 def sendText(recv_id):
