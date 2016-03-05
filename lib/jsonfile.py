@@ -1,58 +1,52 @@
 import json
 
-global f, paths
+class JSONFile:
 
-f = None
-paths = None
+	def __init__(self):
+		self.f = None
+		self.paths = None
 
-def new_file(path):
-	global f, paths
-	f = open(path, 'w')
-	paths = path
+	def new_file(self, path):
+		self.f = open(path, 'w')
+		self.paths = path
 
-def open_file(path):
-	global f, paths
+	def open_file(self, path):
+		try:
+			self.f = open(path, 'r')
+			self.paths = path
+			return True
+		except:
+			return False
 
-	try:
-		f = open(path, 'r')
-		paths = path
-		return True
-	except:
-		return False
+	def read(self):
+		try:
+			x = json.load(self.f)
+			self.reopen()
+			return x
+		except:
+			return None
 
-def read():
-	global f
+	def update(self, obj):
+		x = self.read()
 
-	try:
-		x = json.load(f)
-		reopen()
-		return x
-	except:
-		return None
+		if x is not None:
+			x.update(obj)
+		else:
+			x = obj
 
-def update(obj):
-	x = read()
+		self.write(x)
 
-	if x is not None:
-		x.update(obj)
-	else:
-		x = obj
+	def reopen(self):
+		self.f.close()
+		self.f = open(self.paths, 'r')
 
-	write(x)
+	def write(self, obj):
+		self.f = open(self.paths, 'w')
+		json.dump(obj, self.f, sort_keys=True, indent=2)
+		self.f.close()
+		self.reopen()
 
-def reopen():
-	global f, paths
-	f.close()
-	f = open(paths, 'r')
-
-def write(obj):
-	global f
-	f = open(paths, 'w')
-	json.dump(obj, f, sort_keys=True, indent=2)
-	f.close()
-	reopen()
-
-def delete(key):
-	x = read()
-	del x[key]
-	write(x)
+	def delete(self, key):
+		x = self.read()
+		del x[key]
+		self.write(x)

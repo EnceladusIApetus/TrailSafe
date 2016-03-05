@@ -1,6 +1,6 @@
 from wifi import Cell, Scheme
-import socket
-from lib import jsonfile, network
+from lib import jsonfile, network, header, device
+import socket, json
 
 global port
 port = None
@@ -9,8 +9,10 @@ def testInternetConnection():
     s = createConnection()
         
     if s is not None:
-        s.send('testInternetConnection')
-        if s.recv(1024) == '1':
+        s.send(header.sendCode('60'))
+        response = json.loads(s.recv(1024))
+        print 'log: host->' + response['process-description']
+        if int(response['process-code']) == 61:
             print 'Server connection successful.'
             return True
         else:
@@ -37,13 +39,11 @@ def createScheme(interface, cell, ssidName, passkey):
 
 def connectNode():
     global port
-    jsonfile.open_file('/home/pi/TrailSafe/config/config.ini')
-    info = jsonfile.read()
-    deviceSSID = info['device-SSID']
-    passkey = info['passkey']
-    interface = info['client-interface']
-    targetSSIDPrefix = info['target-SSIDPrefix']
-    port = info['port']
+    deviceSSID = device.get_config('device-SSID')
+    passkey = device.get_config('passkey')
+    interface = device.get_config('client-interface')
+    targetSSIDPrefix = device.get_config('target-SSIDPrefix')
+    port = device.get_config('port')
     cellList = Cell.all(interface)
     targetSSID = []
     internetSSID = []
@@ -52,27 +52,27 @@ def connectNode():
         if targetSSIDPrefix in cell.ssid:
             targetSSID.append(cell)
 
-    print 'target amount %d' % len(targetSSID)
+    print 'log: number of target SSID -> %d' % len(targetSSID)
     for x in range (0, len(targetSSID)):
         print targetSSID[x].ssid
         scheme = Scheme.find(interface, targetSSID[x].ssid)
         if scheme is None:
-            print 'create scheme'
+            print 'log: create scheme'
             scheme = createScheme(interface, targetSSID[x], targetSSID[x].ssid, passkey)
-        scheme.activate()                     
+        scheme.activate()
         if testInternetConnection() == True:
             internetSSID.append(targetSSID[x])
 
     print internetSSID
 
     highSignal = internetSSID[0]
-    print 'find maximum high signal'
+    print 'log: finding maximal signal SSID'
     for ssid in internetSSID:
         if ssid.signal > highSignal.signal:
             highSignal = ssid
-    print 'connect'
+    print 'log: connected'
     scheme = Scheme.find(interface, highSignal.ssid)
     scheme.activate()
 
-    jsonfile.update({'node-defaultGateway': network.getDefaultGateway(interface)})
+    device.set_config('node-defaultGateway', network.getDefaultGateway(interface))
 
