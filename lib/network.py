@@ -1,4 +1,4 @@
-import socket, struct, os, sys, header, json
+import socket, struct, os, sys, header, json, device
 
 def getDefaultGateway_hex(interface):
     route = "/proc/net/route"
@@ -129,32 +129,38 @@ def send_text(dest_ip, port, timeout, text, recv_id):
         s.close()
     return None
 
-def forward_text(c, port, timeout, header):
+def forward_text(c, port, timeout, head):
     c.send(header.sendCode('310'))
     print 'log: request text'
     text = c.recv(1024)
     print 'log: text received'
-    s = create_socket(getDefaultGateway('wlan0'), port, timeout)
-    try:
-        if s is not None:
-            print 'log: connected to node'
-            s.send(header.sendCode(header))
-            print 'log: request to forward text'
-            response = json.loads(s.recv(1024))
-            print 'log: host->' + response['process-description']
-            if response['process-code'] == 310:
-                print 'log: forwarding'
-                s.send(text)
+    if head['receiver'] == device.get_full_id():
+        c.send(header.sendCode('10'))
+        print 'host: ' + text
+    else:
+        head['path'].append(device.get_full_id())
+        s = create_socket(getDefaultGateway('wlan0'), port, timeout)
+        try:
+            if s is not None:
+                print 'log: connected to node'
+                s.send(json.dumps(head))
+                print 'log: request to forward text'
                 response = json.loads(s.recv(1024))
-                print 'log: forwarding completed. send back response'
-                c.send(response)
-            s.close()
-            c.close()
-            return response
-    except:
-        print 'log: forwarding failed'
-        s.close()
-        c.close()
+                print 'host: ' + response['process-description']
+                if int(response['process-code']) == 310:
+                    print 'log: forwarding'
+                    s.send(text)
+                    response = s.recv(1024)
+                    print 'log: forwarding completed. send back response'
+                    c.send(response)
+                    s.close()
+                return response
+            else:
+                c.send(header.sendCode('27'))
+        except:
+            print 'log: forwarding failed'
+            c.send(header.sendCode('27'))
+    c.close()
     return None
 
 def create_socket(dest_ip, port, timeout):

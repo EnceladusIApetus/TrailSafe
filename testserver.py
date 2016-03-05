@@ -1,17 +1,12 @@
-from lib import network
-import socket
-import os
-import sys
-import json
-from lib import header
+from lib import network, header, device
+import socket, os, sys, json
 
-
-self_ip = '192.168.2.1'
+self_ip = device.get_config('self-defaultGateway')
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((self_ip, 12345))
 s.listen(10)
-print 'start'
+print 'log: server is running'
 while True:
     try:
     	c, addr = s.accept()
@@ -33,7 +28,7 @@ while True:
             network.forward_text(c, 12345, 5, head)
             
     except KeyboardInterrupt:
-	print 'exit program.'
-	break
+        print 'exit program.'
+        break
     except:
         print 'unexpected error: ', sys.exc_info()[0]
