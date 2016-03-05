@@ -1,8 +1,8 @@
 import jsonfile, device
 
 def open_file():
-	reader = jsonfile.JSONFile
-	reader.open_file(device.get_config()['code-description-location'])
+	reader = jsonfile.JSONFile()
+	reader.open_file(device.get_config('code-description-location'))
 	return jsonfile.read()
 
 def get_description(code):
