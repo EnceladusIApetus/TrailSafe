@@ -1,9 +1,4 @@
-import socket
-import struct
-import os
-import sys
-import header
-import json
+import socket, struct, os, sys, header, json
 
 def getDefaultGateway_hex(interface):
     route = "/proc/net/route"
@@ -87,7 +82,7 @@ def validateSending(s, buff_size, size, path, response):
             response = sendData(s, buff_size, size, path)
     return response
 
-def sendFile(path, buff_size, file_name):
+def sendFileToServer(path, buff_size, file_name):
     sendFile(getDefaultGateway('wlan0'), path, buff_size, file_name, 'SV')
 
 def sendFile(dest_ip, path, buff_size, file_name, recv_id):
@@ -114,7 +109,7 @@ def sendFile(dest_ip, path, buff_size, file_name, recv_id):
     else:
         return None
 
-def send_text(dest_ip, port, timeout, text):
+def send_text_to_server(dest_ip, port, timeout, text):
     return send_text(dest_ip, port, timeout, text, 'SV')
 
 def send_text(dest_ip, port, timeout, text, recv_id):
