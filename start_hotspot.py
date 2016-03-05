@@ -1,22 +1,19 @@
-from lib import jsonfile
-import connectNode
-import os
+from lib import device
+import os, connectNode
 
 print os.popen('ifdown wlan1').read()
 connectNode.connectNode()
 
-jsonfile.open_file('/home/pi/TrailSafe/config/config.ini')
-x = jsonfile.read()
-node_gateway = x['node-defaultGateway']
+node_gateway = device.get_config('node-defaultGateway')
 self_gateway = None
 
-for gateway in x['self-defaultGateway-list']:
+for gateway in device.get_config('self-defaultGateway-list'):
     if gateway not in node_gateway:
         self_gateway = gateway
         break
-old_gateway = x['self-defaultGateway']
+old_gateway = device.get_config('self-defaultGateway')
 print 'chose gateway: ' + self_gateway
-jsonfile.update({'self-defaultGateway': self_gateway})
+device.set_config('self-defaultGateway', self_gateway)
 
 interface_file = open('/etc/network/interfaces', 'r')
 dhcpd_file = open('/etc/dhcp/dhcpd.conf', 'r')

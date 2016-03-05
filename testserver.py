@@ -15,21 +15,21 @@ print 'start'
 while True:
     try:
     	c, addr = s.accept()
-	    c.settimeout(5)
+        c.settimeout(5)
     	head = json.loads(c.recv(1024))
 
     	print 'process: ' + head['process-description']
     
-    	if head['process-code'] == 20:
+    	if int(head['process-code']) == 20:
             network.receiveFile(c, '/home/pi/TrailSafe/files/', 1024, head)
 
-        if head['process-code'] == 60:
+        if int(head['process-code']) == 60:
             if network.test_server_connection():
                 c.send(header.sendCode('61'))
             else:
                 c.send(header.sendCode('62'))
 
-        if head['process-code'] == 21:
+        if int(head['process-code']) == 21:
             network.forward_text(c, 12345, 5, head)
             
     except KeyboardInterrupt:

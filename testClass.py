@@ -1,6 +1,9 @@
-from lib import jsonfile
+from lib import jsonfile, header
+import socket
 
-x = jsonfile.JSONFile()
-x.open_file("C:\\msys64\\home\\Pakin\\TrailSafe\\config\\config.ini")
-x = x.read()
-print x
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.settimeout(10)
+s.connect_ex(('192.168.1.1', 12345))
+s.send(header.sendCode('60'))
+print s.recv(1024)

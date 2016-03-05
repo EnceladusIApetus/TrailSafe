@@ -1,9 +1,9 @@
-import jsonfile
+import jsonfile, device
 
 def open_file():
-	reader = jsonfile.JSONFile()
-	reader.open_file('/home/pi/TraiSafe/config/code_description.ini')
-	return reader.read()
+	reader = jsonfile.JSONFile
+	reader.open_file(device.get_config()['code-description-location'])
+	return jsonfile.read()
 
 def get_description(code):
 	description = open_file()

@@ -12,7 +12,7 @@ def testInternetConnection():
         s.send(header.sendCode('60'))
         response = json.loads(s.recv(1024))
         print 'log: host->' + response['process-description']
-        if response['process-code'] == 61:
+        if int(response['process-code']) == 61:
             print 'Server connection successful.'
             return True
         else:

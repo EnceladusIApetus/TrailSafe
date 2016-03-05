@@ -34,7 +34,7 @@ class JSONFile:
 		else:
 			x = obj
 
-		write(x)
+		self.write(x)
 
 	def reopen(self):
 		self.f.close()
@@ -49,4 +49,4 @@ class JSONFile:
 	def delete(self, key):
 		x = self.read()
 		del x[key]
-		write(x)
+		self.write(x)
