@@ -2,7 +2,7 @@ import json
 import device
 import code_descriptor
 
-def sendText(recv_id):
+def send_message(recv_id):
 	x = {}
 	x['process-code'] = 21
 	x['process-description'] = code_descriptor.get_description('21')
@@ -11,12 +11,12 @@ def sendText(recv_id):
 	x['path'] = []
 	return json.dumps(x)
 
-def forwardData(old_header):
+def forward_data(old_header):
 	x = json.loads(old_header)
 	x['path'].append(device.get_full_id())
 	return json.dumps(x)
 
-def sendFile(recv_id, file_name,  file_size, buffer_size):
+def send_file(recv_id, file_name,  file_size, buffer_size):
 	x = {}
 	x['process-code'] = 20
 	x['process-description'] = code_descriptor.get_description('20')
@@ -28,7 +28,7 @@ def sendFile(recv_id, file_name,  file_size, buffer_size):
 	x['buffer-size'] = buffer_size
 	return json.dumps(x)
 
-def registerDevice():
+def register_device():
 	x = {}
 	x['process-code'] = 40
 	x['process-description'] = code_descriptor.get_description('40')
@@ -37,7 +37,7 @@ def registerDevice():
 	x['path'] = []
 	return json.dumps(x)
 
-def sendCode(code):
+def send_code(code):
 	x = {}
 	x['process-code'] = code
 	x['process-description'] = code_descriptor.get_description(code)

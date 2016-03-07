@@ -5,11 +5,11 @@ import socket, json
 global port
 port = None
 
-def testInternetConnection():
-    s = createConnection()
+def test_internet_connection():
+    s = create_connection()
         
     if s is not None:
-        s.send(header.sendCode('60'))
+        s.send(header.send_code('60'))
         response = json.loads(s.recv(1024))
         print 'log: host->' + response['process-description']
         if int(response['process-code']) == 61:
@@ -20,59 +20,59 @@ def testInternetConnection():
     else:
         print 'Cannot connect to server.'
     
-def createConnection():
+def create_connection():
     global port
-    defaultGateway = network.getDefaultGateway('wlan0')
-    print defaultGateway
+    defaultgateway = network.getdefaultgateway('wlan0')
+    print defaultgateway
     socket.setdefaulttimeout(5)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print 'start connection'
-    if s.connect_ex((defaultGateway, port)) == 0:
+    if s.connect_ex((defaultgateway, port)) == 0:
         return s
     else:
         return None
 
-def createScheme(interface, cell, ssidName, passkey):
+def create_scheme(interface, cell, ssidName, passkey):
     scheme = Scheme.for_cell(interface, ssidName, cell, passkey)
     scheme.save()
     return scheme
 
-def connectNode():
+def connect_node():
     global port
-    deviceSSID = device.get_config('device-SSID')
+    device_ssid = device.get_config('device-SSID')
     passkey = device.get_config('passkey')
     interface = device.get_config('client-interface')
-    targetSSIDPrefix = device.get_config('target-SSIDPrefix')
+    target_ssid_prefix = device.get_config('target-SSIDPrefix')
     port = device.get_config('port')
-    cellList = Cell.all(interface)
-    targetSSID = []
-    internetSSID = []
+    cell_list = Cell.all(interface)
+    target_ssid = []
+    internet_ssid = []
 
-    for cell in cellList:
-        if targetSSIDPrefix in cell.ssid:
-            targetSSID.append(cell)
+    for cell in cell_list:
+        if target_ssid_prefix in cell.ssid:
+            target_ssid.append(cell)
 
-    print 'log: number of target SSID -> %d' % len(targetSSID)
-    for x in range (0, len(targetSSID)):
-        print targetSSID[x].ssid
-        scheme = Scheme.find(interface, targetSSID[x].ssid)
+    print 'log: number of target SSID -> %d' % len(target_ssid)
+    for x in range (0, len(target_ssid)):
+        print target_ssid[x].ssid
+        scheme = Scheme.find(interface, target_ssid[x].ssid)
         if scheme is None:
             print 'log: create scheme'
-            scheme = createScheme(interface, targetSSID[x], targetSSID[x].ssid, passkey)
+            scheme = create_scheme(interface, target_ssid[x], target_ssid[x].ssid, passkey)
         scheme.activate()
-        if testInternetConnection() == True:
-            internetSSID.append(targetSSID[x])
+        if test_internet_connection() == True:
+            internet_ssid.append(target_ssid[x])
 
-    print internetSSID
+    print internet_ssid
 
-    highSignal = internetSSID[0]
+    high_signal_ssid = internet_ssid[0]
     print 'log: finding maximal signal SSID'
-    for ssid in internetSSID:
-        if ssid.signal > highSignal.signal:
-            highSignal = ssid
+    for ssid in internet_ssid:
+        if ssid.signal > high_signal_ssid.signal:
+            high_signal_ssid = ssid
     print 'log: connected'
-    scheme = Scheme.find(interface, highSignal.ssid)
+    scheme = Scheme.find(interface, high_signal_ssid.ssid)
     scheme.activate()
 
-    device.set_config('node-defaultGateway', network.getDefaultGateway(interface))
+    device.set_config('node-defaultgateway', network.getdefaultgateway(interface))
 
