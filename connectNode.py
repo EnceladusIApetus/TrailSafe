@@ -22,7 +22,7 @@ def test_internet_connection():
     
 def create_connection():
     global port
-    defaultgateway = network.getdefaultgateway('wlan0')
+    defaultgateway = network.get_defaultgateway('wlan0')
     print defaultgateway
     socket.setdefaulttimeout(5)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -74,5 +74,5 @@ def connect_node():
     scheme = Scheme.find(interface, high_signal_ssid.ssid)
     scheme.activate()
 
-    device.set_config('node-defaultgateway', network.getdefaultgateway(interface))
+    device.set_config('node-defaultgateway', network.get_defaultgateway(interface))
 

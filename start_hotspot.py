@@ -2,7 +2,7 @@ from lib import device
 import os, connectNode
 
 print os.popen('ifdown wlan1').read()
-connectNode.connectNode()
+connectNode.connect_node()
 
 node_gateway = device.get_config('node-defaultgateway')
 self_gateway = None

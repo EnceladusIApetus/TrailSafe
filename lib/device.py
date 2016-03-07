@@ -1,4 +1,4 @@
-import jsonfile
+import jsonfile, 
 
 def get_all_config():
 	reader = jsonfile.JSONFile()
