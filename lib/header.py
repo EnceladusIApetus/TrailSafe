@@ -2,13 +2,14 @@ import json
 import device
 import code_descriptor
 
-def send_message(recv_id):
+def send_message(recv_id, message):
 	x = {}
 	x['process-code'] = 21
 	x['process-description'] = code_descriptor.get_description('21')
 	x['sender'] = device.get_full_id()
 	x['receiver'] = recv_id
 	x['path'] = []
+	x['message'] = message
 	return json.dumps(x)
 
 def forward_data(old_header):

@@ -109,51 +109,38 @@ def send_file(dest_ip, path, buff_size, file_name, recv_id):
     else:
         return None
 
-def send_text_to_server(port, timeout, text):
-    return send_text(get_defaultgateway('wlan0'), port, timeout, text, 'SV')
+def send_message_to_server(port, timeout, message):
+    return send_message(get_defaultgateway('wlan0'), port, timeout, message, 'SV')
 
-def send_text(dest_ip, port, timeout, text, recv_id):
+def send_message(dest_ip, port, timeout, message, recv_id):
     s = create_socket(dest_ip, port, timeout)
     try:
         if s is not None:
-            s.send(header.sendText(recv_id))
+            s.send(header.sendmessage(recv_id, message))
             response = json.loads(s.recv(1024))
             print 'host: ' + response['process-description']
-            if int(response['process-code']) == 310:
-                s.send(text)
-                response = json.loads(s.recv(1024))
-                print 'host: ' + response['process-description']
-                s.close()
-                return response
+            s.close()
+            return response
     except:
-        print 'log: sending text fail'
+        print 'log: sending message fail'
         s.close()
     return None
 
-def forward_text(c, port, timeout, head):
-    c.send(header.send_code('310'))
-    print 'log: request text'
-    text = c.recv(1024)
-    print 'log: text received'
+def forward_message(c, port, timeout, head):
     if head['receiver'] == device.get_full_id():
         c.send(header.send_code('10'))
-        print 'host: ' + text
+        print 'host: ' + head['message']
     else:
-        head['path'].append(device.get_full_id())
         s = create_socket(get_defaultgateway('wlan0'), port, timeout)
         try:
             if s is not None:
-                print 'log: connected to node'
-                s.send(json.dumps(head))
-                print 'log: request to forward text'
+                print 'log: forwarding message to node'
+                s.send(header.forward_data(head))
                 response = json.loads(s.recv(1024))
                 print 'host: ' + response['process-description']
-                if int(response['process-code']) == 310:
-                    print 'log: forwarding'
-                    s.send(text)
-                    response = s.recv(1024)
+                if response is not None and int(response['process-code']) == 10:
                     print 'log: forwarding completed. send back response'
-                    c.send(response)
+                    c.send(json.dumps(response))
                     s.close()
                 return response
             else:

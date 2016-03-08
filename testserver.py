@@ -25,7 +25,7 @@ while True:
                 c.send(header.send_code('62'))
 
         if int(head['process-code']) == 21:
-            network.forward_text(c, 12345, 5, head)
+            network.forward_message(c, 12345, 5, head)
             
     except KeyboardInterrupt:
         print 'exit program.'
