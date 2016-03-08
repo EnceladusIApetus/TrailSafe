@@ -37,21 +37,21 @@ def receive_file(c, path, buff_size, header):
 def check_file(c, path, buff_size, file_size, file_name, tryout):
     f = open(path + file_name, 'r')
     while (os.fstat(f.fileno()).st_size < file_size and tryout > 0):
-    	c.send(header.sendCode('51'))
+    	c.send(header.send_code('51'))
     	print 'log: file is corrupt'
     	print 'log: received ' + str(os.fstat(f.fileno()).st_size)
     	receive_data(c, path, buff_size, file_size, file_name)
     	tryout -= 1
         if tryout <= 0:
-    	   c.send(header.sendCode('24'))
+    	   c.send(header.send_code('24'))
     	   print 'log: stop receiving progress due to an error.'
         else:
-    	   c.send(header.sendCode('11'))
+    	   c.send(header.send_code('11'))
     	print 'log: receiving progress complete.'
  
 def receive_data(c, path, buff_size, file_size, file_name):
     f = open(path + file_name, 'w+')
-    c.send(header.sendCode('310'))
+    c.send(header.send_code('310'))
     print 'log: receiving data'
     data_buffer = None
     while(file_size > 0):
@@ -109,8 +109,8 @@ def send_file(dest_ip, path, buff_size, file_name, recv_id):
     else:
         return None
 
-def send_text_to_server(dest_ip, port, timeout, text):
-    return send_text(dest_ip, port, timeout, text, 'SV')
+def send_text_to_server(port, timeout, text):
+    return send_text(get_defaultgateway('wlan0'), port, timeout, text, 'SV')
 
 def send_text(dest_ip, port, timeout, text, recv_id):
     s = create_socket(dest_ip, port, timeout)
@@ -131,12 +131,12 @@ def send_text(dest_ip, port, timeout, text, recv_id):
     return None
 
 def forward_text(c, port, timeout, head):
-    c.send(header.sendCode('310'))
+    c.send(header.send_code('310'))
     print 'log: request text'
     text = c.recv(1024)
     print 'log: text received'
     if head['receiver'] == device.get_full_id():
-        c.send(header.sendCode('10'))
+        c.send(header.send_code('10'))
         print 'host: ' + text
     else:
         head['path'].append(device.get_full_id())
@@ -157,10 +157,10 @@ def forward_text(c, port, timeout, head):
                     s.close()
                 return response
             else:
-                c.send(header.sendCode('27'))
+                c.send(header.send_code('27'))
         except:
             print 'log: forwarding failed'
-            c.send(header.sendCode('27'))
+            c.send(header.send_code('27'))
     c.close()
     return None
 

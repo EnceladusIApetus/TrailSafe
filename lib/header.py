@@ -33,8 +33,7 @@ def register_device():
 	x['process-code'] = 40
 	x['process-description'] = code_descriptor.get_description('40')
 	x['device-id'] = device.get_full_id()
-	x['device-type'] = device_info.get_type()
-	x['path'] = []
+	x['device-type'] = device.get_type()
 	return json.dumps(x)
 
 def send_code(code):

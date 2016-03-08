@@ -2,7 +2,7 @@ import jsonfile
 
 def get_all_config():
 	reader = jsonfile.JSONFile()
-	reader.open_file('/home/pi/TrailSafe/config/config.ini')
+	reader.open_file('home/pi/TrailSafe/config/config.ini')
 	return reader.read()
 
 def get_config(config):
@@ -21,5 +21,5 @@ def set_config(config_name, value):
 	config_value = get_all_config()
 	config_value[config_name] = value
 	writer = jsonfile.JSONFile()
-	writer.open_file('/home/pi/TrailSafe/config/config.ini')
+	writer.open_file('home/pi/TrailSafe/config/config.ini')
 	writer.write(config_value)
