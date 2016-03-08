@@ -138,7 +138,7 @@ def forward_message(c, port, timeout, head):
                 s.send(header.forward_data(head))
                 response = json.loads(s.recv(1024))
                 print 'host: ' + response['process-description']
-                if response is not None and int(response['process-code']) == 10:
+                if response is not None:
                     print 'log: forwarding completed. send back response'
                     c.send(json.dumps(response))
                     s.close()
@@ -152,12 +152,19 @@ def forward_message(c, port, timeout, head):
     return None
 
 def create_socket(dest_ip, port, timeout):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(timeout)
-    if s.connect_ex((dest_ip, port)) == 0:
-        return s
-    else:
-        return None
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(timeout)
+        if s.connect_ex((dest_ip, port)) == 0:
+            return s
+        else:
+            return None
+
+def decap_message(message):
+        `return json.loads((json.loads(message)['message']))
 
 def test_server_connection():
-    return True
+        response = send_message_to_server(12345, 10, json.dumps(header.send_code('60')))
+        if response is not None and int(decap_message(response)['process-code']) == 10:
+            return True
+        else:
+            return False
