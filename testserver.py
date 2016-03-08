@@ -26,6 +26,13 @@ while True:
 
         if int(head['process-code']) == 21:
             network.forward_message(c, 12345, 5, head)
+
+        if int(head['process-code']) == 40:
+            response = network.send_message_to_server(12345, 10, json.dumps(head))
+            if response is not None:
+                c.send(json.dumps(response['message']))
+            else:
+                c.send(header.send_code('42'))
             
     except KeyboardInterrupt:
         print 'exit program.'
