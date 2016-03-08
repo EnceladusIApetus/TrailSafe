@@ -135,7 +135,7 @@ def forward_message(c, port, timeout, head):
         try:
             if s is not None:
                 print 'log: forwarding message to node'
-                s.send(header.forward_data(head))
+                s.send(header.forward_data(json.dumps(head)))
                 response = json.loads(s.recv(1024))
                 print 'host: ' + response['process-description']
                 if response is not None:
@@ -160,7 +160,7 @@ def create_socket(dest_ip, port, timeout):
             return None
 
 def decap_message(message):
-        `return json.loads((json.loads(message)['message']))
+        return json.loads(json.loads(message)['message'])
 
 def test_server_connection():
         response = send_message_to_server(12345, 10, json.dumps(header.send_code('60')))
