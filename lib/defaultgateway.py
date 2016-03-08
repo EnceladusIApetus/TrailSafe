@@ -1,7 +1,7 @@
 import socket
 import struct
 
-def getDefaultGateway_hex(interface):
+def get_defaultgateway_hex(interface):
     route = "/proc/net/route"
     with open(route) as f:
         for line in f.readlines():
@@ -12,8 +12,8 @@ def getDefaultGateway_hex(interface):
             except:
                 continue
 
-def getDefaultGateway(interface):
-    ip_hex = int(getDefaultGateway_hex(interface), 16)
+def get_defaultgateway(interface):
+    ip_hex = int(getdefaultgateway_hex(interface), 16)
     return socket.inet_ntoa(struct.pack('<L', ip_hex))
 
 

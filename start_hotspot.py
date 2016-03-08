@@ -2,18 +2,18 @@ from lib import device
 import os, connectNode
 
 print os.popen('ifdown wlan1').read()
-connectNode.connectNode()
+connectNode.connect_node()
 
-node_gateway = device.get_config('node-defaultGateway')
+node_gateway = device.get_config('node-defaultgateway')
 self_gateway = None
 
-for gateway in device.get_config('self-defaultGateway-list'):
+for gateway in device.get_config('self-defaultgateway-list'):
     if gateway not in node_gateway:
         self_gateway = gateway
         break
-old_gateway = device.get_config('self-defaultGateway')
+old_gateway = device.get_config('self-defaultgateway')
 print 'chose gateway: ' + self_gateway
-device.set_config('self-defaultGateway', self_gateway)
+device.set_config('self-defaultgateway', self_gateway)
 
 interface_file = open('/etc/network/interfaces', 'r')
 dhcpd_file = open('/etc/dhcp/dhcpd.conf', 'r')
