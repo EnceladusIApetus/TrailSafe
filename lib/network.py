@@ -159,6 +159,13 @@ def create_socket(dest_ip, port, timeout):
         else:
             return None
 
+def init_socket():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind((device.get_config('self-defaultgateway'), device.get_config('port')))
+    s.listen(device.get_config('forwarder-timeout'))
+    return s
+
 def decap_message(message):
         return json.loads((json.loads(message))['message'])
 
@@ -167,7 +174,7 @@ def test_server_connection_in(c, head):
     send_back(c, response_raw)    
 
 def test_server_connection():
-    response = send_message_to_server(12345, 10, heaer.send_code('60'))
+    response = send_message_to_server(12345, 10, header.send_code('60'))
     if response is not None and int(response['process-code']) == 10:
         return True
     return False
