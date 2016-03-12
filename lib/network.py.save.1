@@ -1,4 +1,4 @@
-import socket, struct, os, sys, header, json, device, httplib, urllib
+import socket, struct, os, sys, header, json, device, httplib
 
 def get_defaultgateway_hex(interface):
     route = "/proc/net/route"
@@ -116,7 +116,7 @@ def send_message(dest_ip, port, timeout, message, recv_id):
     s = create_socket(dest_ip, port, timeout)
     try:
         if s is not None:
-            s.send(header.send_message(recv_id, message))
+            s.send(header.sendmessage(recv_id, message))
             response = json.loads(s.recv(1024))
             print 'host: ' + response['process-description']
             s.close()
@@ -160,44 +160,13 @@ def create_socket(dest_ip, port, timeout):
             return None
 
 def decap_message(message):
+        print message
+        print json.loads(message)
         return json.loads((json.loads(message))['message'])
 
-def test_server_connection_in(c, head):
-    response_raw = HTTPConnection('POST', '/test/serverconnection', head)
-    send_back(c, response_raw)    
-
 def test_server_connection():
-    response = send_message_to_server(12345, 10, heaer.send_code('60'))
-    if response is not None and int(response['process-code']) == 10:
-        return True
-    return False
-
-def HTTPConnection(method, url, params):
-    params = urllib.urlencode(params)
-    headers = {'Content-type': 'application/x-www-form-urlencoded', 'Accept': 'text/plain'}
-    con = httplib.HTTPConnection(device.get_config('server-ip'))
-    con.request(method, url, params, headers)
-    return con.getresponse()
-
-def update_status():
-    print json.dumps(send_message_to_server(12345, 10, header.update_status()))
-
-def register_device():
-    print json.dumps(send_message_to_server(12345, 10, header.update_status()))
-
-def register_device_in(c, head):
-    response_raw = HTTPConnection('POST', '/device/register', head)
-    send_back(c, response_raw)
-
-def update_status_in(c, head):
-    response_raw = HTTPConnection('POST', '/device/updatestatus', head)
-    send_back(c, response_raw)
-
-def send_back(c, response_raw):
-    response = response_raw.read()
-    print response
-    if response_raw is  None or int(response_raw.status) != 200:
-            response = header.send_code('42')
-    c.send(response)
-    c.close()
-    return response
+	con = httplib.HTTPConnection('
+        if response is not None and int(decap_message(response)['process-code']) == 10:
+            return True
+        else:
+            return False
