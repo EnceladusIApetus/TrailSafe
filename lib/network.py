@@ -183,13 +183,16 @@ def update_status():
     print json.dumps(send_message_to_server(12345, 10, header.update_status()))
 
 def register_device():
-    print json.dumps(send_message_to_server(12345, 10, header.update_status()))
+    print json.dumps(send_message_to_server(12345, 10, header.register_device()))
 
 def register_device_in(c, head):
+    head['path'].append(device.get_full_id())
+    head['path'] = json.dumps(head['path'])
     response_raw = HTTPConnection('POST', '/device/register', head)
     send_back(c, response_raw)
 
 def update_status_in(c, head):
+    head['path'].append(device.get_full_id())
     response_raw = HTTPConnection('POST', '/device/updatestatus', head)
     send_back(c, response_raw)
 

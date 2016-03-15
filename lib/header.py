@@ -33,8 +33,10 @@ def register_device():
 	x = {}
 	x['process-code'] = 40
 	x['process-description'] = code_descriptor.get_description('40')
-	x['device-id'] = device.get_full_id()
+	x['device-id'] = device.get_id()
+	x['device-full-id'] = device.get_full_id()
 	x['device-type'] = device.get_type()
+	x['registration-node-id'] = device.get_config('registration-node-id')
 	return json.dumps(x)
 
 def update_status():
