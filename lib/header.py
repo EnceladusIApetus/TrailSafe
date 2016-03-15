@@ -48,6 +48,26 @@ def update_status():
         x['device-full-id'] = device.get_full_id()
         return json.dumps(x)
 
+def send_event(event_type, detail):
+        x = {}
+        x['process-code'] = 90
+        x['process-description'] = code_descriptor.get_description('90')
+        x['device-id'] = device.get_id()
+        x['device-type'] = device.get_type();
+        x['device-full-id'] = device.get_full_id()
+        x['event-type'] = event_type
+        x['event-detail'] = detail
+        return json.dumps(x)
+
+def check_emergency_response():
+        x = {}
+        x['process-code'] = 94
+        x['process-description'] = code_descriptor.get_description('94')
+        x['device-id'] = device.get_id()
+        x['device-type'] = device.get_type();
+        x['device-full-id'] = device.get_full_id()
+        return json.dumps(x)
+
 def send_code(code):
 	x = {}
 	x['process-code'] = code
