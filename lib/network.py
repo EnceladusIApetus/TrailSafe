@@ -179,12 +179,6 @@ def HTTPConnection(method, url, params):
     con.request(method, url, params, headers)
     return con.getresponse()
 
-def update_status():
-    print json.dumps(send_message_to_server(12345, 10, header.update_status()))
-
-def register_device():
-    print json.dumps(send_message_to_server(12345, 10, header.register_device()))
-
 def register_device_in(c, head):
     head['path'].append(device.get_full_id())
     head['path'] = json.dumps(head['path'])
@@ -196,11 +190,31 @@ def update_status_in(c, head):
     response_raw = HTTPConnection('POST', '/device/updatestatus', head)
     send_back(c, response_raw)
 
+def send_event_in(c, head):
+    response_raw = HTTPConnection('POST', '/device/event', head)
+    send_back(c, response_raw)
+
+def check_emergency_response_in(c, head):
+    response_raw = HTTPConnection('POST', '/wristband/check_response', head)
+    send_back(c, response_raw)
+
 def send_back(c, response_raw):
     response = response_raw.read()
     print response
     if response_raw is  None or int(response_raw.status) != 200:
-            response = header.send_code('42')
+            response = header.send_code('12')
     c.send(response)
     c.close()
     return response
+
+def update_status():
+    print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.update_status()))
+
+def register_device():
+    print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.register_device()))
+
+def send_event(event_type, detail):
+    print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.send_event(event_type, detail)))
+
+def check_emergency_response():
+    print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.check_emergency_response()))
