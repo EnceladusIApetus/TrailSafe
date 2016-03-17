@@ -1,0 +1,9 @@
+{
+    "type": "sftp",
+    "host": "207.46.237.118",
+    "username": "root",
+    "password": "TrailSafe!",
+    "port": 22,
+    "remotePath": "/var/www/html/trailsafe",
+    "uploadOnSave": true
+}
