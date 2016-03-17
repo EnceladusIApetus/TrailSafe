@@ -105,4 +105,44 @@ class DeviceController extends BaseController
 		$response['receiver'] = Input::get('sender');
 		return json_encode($response);
 	}
+
+	public function genEvent()
+	{
+		$header = Input::all();
+		$message = json_decode($header['message'], true);
+		$processCode = (int) $message['process-code'];
+
+		if($processCode == 90) {
+			$device_id = (int) $message['device-id'];
+			$device_type = $message['device-type'];
+			$event_type = $message['event-type'];
+			$event_detail = $message['event-detail'];
+
+			switch ($message['device-type']) {
+				case 'EN':
+					Node::find($device_id)->genEvent($event_type, $event_detail);
+					$response = CodeDescriptor::getResponseHeader(11);
+					break;
+
+				case 'IN':
+					Node::find($device_id)->genEvent($event_type, $event_detail);
+					$response = CodeDescriptor::getResponseHeader(11);
+					break;
+
+				case 'WB':
+					Wristband::find($device_id)->genEvent($event_type, $event_detail);
+					$response = CodeDescriptor::getResponseHeader(11);
+					break;
+				
+				default:
+					$response = CodeDescriptor::getResponseHeader(12);
+					break;
+			}
+		}
+		else
+			$response = CodeDescriptor::getResponseHeader(12);
+
+		$response['receiver'] = Input::get('sender');
+		return json_encode($response);
+	}
 }

@@ -2,6 +2,11 @@
 
 class NodeController extends BaseController {
 
+	public function findByID()
+	{
+		return Node::find(Input::get('device-id'));
+	}
+
 	public function updateGPSCoordinate()
 	{
 		$message = json_decode(Input::get('message'), true);

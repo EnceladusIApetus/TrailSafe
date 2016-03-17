@@ -2,6 +2,12 @@
 
 class UserController extends BaseController
 {
+
+	public function findByID()
+	{
+		return User::find(Input::get('user-id'));
+	}
+
 	public function register()
 	{
 		$input = Input::all();

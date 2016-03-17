@@ -4,7 +4,7 @@ class CodeDescriptor {
 
     public static function getDescription($code)
     {
-		$string = file_get_contents("/var/www/html/trailsafe/app/others/code_description.ini");
+		$string = file_get_contents("/var/www/html/TrailSafe/app/others/code_description.ini");
 		$json_a = json_decode($string, true);
 		return $json_a[$code];
     }

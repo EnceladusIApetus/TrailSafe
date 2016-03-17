@@ -29,4 +29,28 @@ class Wristband extends Eloquent
 		$this->online_status = true;
 		$this->save();
 	}
+
+	public function	genEvent($event_type, $detail)
+	{
+		$oldEvent = $this->event()->get()->pop();
+		if($oldEvent != null && $oldEvent->status == 0) {
+			$oldEvent->status = 2;
+			$oldEvent->save();
+		}
+
+		$event = new WristbandEvent;
+		$event->wristband()->associate($this);
+		$event->user()->associate($this->user()->get()->pop());
+		$event->type = $event_type;
+		$event->detail = $detail;
+		$event->save();
+		return $event;
+	}
+
+	public function	updateEmergeSafeStatus()
+	{
+		$event = $this->genEvent(0, 'The user is safe now.');
+		$event->status = 3;
+		$event->save();
+	}
 }

@@ -4,6 +4,7 @@ class Node extends Eloquent {
 
 	public function registration() { return $this->hasMany('NodeRegistration','node_id'); }
 	public function node_registration() { return $this->hasMany('NodeRegistration','registration_node_id'); }
+	public function event() { return $this->hasMany('NodeEvent','node_id'); }
 	public function wristband_registration() { return $this->hasMany('WristbandRegistration','registration_node_id'); }
 
 	public function register($path, $registrationNodeID)
@@ -21,5 +22,13 @@ class Node extends Eloquent {
 		$this->save();
 		$this->online_status = true;
 		$this->save();
+	}
+
+	public function	genEvent($detail)
+	{
+		$event = new NodeEvent;
+		$event->node()->associate($this);
+		$event->detail = $detail;
+		$event->save();
 	}
 }
