@@ -1,4 +1,4 @@
-from lib import jsonfile, header, network
+from lib import jsonfile, header, network, server
 import socket, json
 
-print network.register_device()
+print server.send_self_event(1, 'hihi')

@@ -159,19 +159,8 @@ def create_socket(dest_ip, port, timeout):
         else:
             return None
 
-def init_socket():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind((device.get_config('self-defaultgateway'), device.get_config('port')))
-    s.listen(device.get_config('forwarder-timeout'))
-    return s
-
 def decap_message(message):
-        return json.loads((json.loads(message))['message'])
-
-def test_server_connection_in(c, head):
-    response_raw = HTTPConnection('POST', '/test/serverconnection', head)
-    send_back(c, response_raw)    
+        return json.loads((json.loads(message))['message'])    
 
 def test_server_connection():
     response = send_message_to_server(12345, 10, header.send_code('60'))
@@ -185,34 +174,6 @@ def HTTPConnection(method, url, params):
     con = httplib.HTTPConnection(device.get_config('server-ip'))
     con.request(method, url, params, headers)
     return con.getresponse()
-
-def register_device_in(c, head):
-    head['path'].append(device.get_full_id())
-    head['path'] = json.dumps(head['path'])
-    response_raw = HTTPConnection('POST', '/device/register', head)
-    send_back(c, response_raw)
-
-def update_status_in(c, head):
-    head['path'].append(device.get_full_id())
-    response_raw = HTTPConnection('POST', '/device/updatestatus', head)
-    send_back(c, response_raw)
-
-def send_event_in(c, head):
-    response_raw = HTTPConnection('POST', '/device/event', head)
-    send_back(c, response_raw)
-
-def check_emergency_response_in(c, head):
-    response_raw = HTTPConnection('POST', '/wristband/check_response', head)
-    send_back(c, response_raw)
-
-def send_back(c, response_raw):
-    response = response_raw.read()
-    print response
-    if response_raw is  None or int(response_raw.status) != 200:
-            response = header.send_code('12')
-    c.send(response)
-    c.close()
-    return response
 
 def update_status():
     print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.update_status()))
