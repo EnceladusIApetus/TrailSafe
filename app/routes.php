@@ -29,14 +29,16 @@ Route::group(array('prefix' => 'test/'), function(){
 });
 
 Route::group(array('prefix' => 'user/'), function(){
-	Route::get('getusers', 'NodeController@getUserAroundNode');
-	Route::get('register', 'NodeController@register');
-	Route::get('unregister', 'NodeController@unregister');
+	Route::get('getusers', 'UserController@getUserAroundNode');
+	Route::get('register', 'UserController@register');
+	Route::get('unregister', 'UserController@unregister');
+	Route::any('find_by_id', 'UserController@findByID');
 });
 
 Route::group(array('prefix' => 'device/'), function(){
 	Route::post('register', 'DeviceController@registerDevice');
 	Route::post('updatestatus', 'DeviceController@updateDeviceStatus');
+	Route::post('event', 'DeviceController@genEvent');
 });
 
 Route::group(array('prefix' => 'node/'), function(){
@@ -46,8 +48,13 @@ Route::group(array('prefix' => 'node/'), function(){
 	Route::get('updategps', 'NodeController@updateGPSCoordinate');
 	Route::get('allnodes', 'NodeController@getAllNodes');
 	Route::get('getallnodesstatus', 'NodeController@getAllNodesStatus');
+	Route::any('find_by_id', 'NodeController@findByID');
 });
 
 Route::group(array('prefix' => 'wristband/'), function(){
-	Route::get('getwristbands', 'NodeController@getWristbandsAroundNode');
+	Route::get('getwristbands', 'WristbandController@getWristbandsAroundNode');
+	Route::any('check_response', 'WristbandController@checkEmergencyResponse');
+	Route::any('in_danger', 'WristbandController@getDeviceInDanger');
+	Route::any('update_safe_device', 'WristbandController@updateDeviceInSafe');
+	Route::any('find_by_id', 'WristbandController@findByID');
 });
