@@ -1,11 +1,11 @@
 from lib import network, header, device, server
-import json, thread
+import json, thread, sys
 
 s = server.init_socket()
 thread.start_new_thread(server.auto_update_self_status, (0.5, ))
 print 'log: server is running'
 while True:
-  
+   try:
     	c, addr = s.accept()
         c.settimeout(5)
         raw_head = c.recv(1024)
@@ -21,7 +21,7 @@ while True:
         if message is not None:
                 if int(message['process-code']) == 60:  #test server connection
                     thread.start_new_thread(server.test_server_connection, (c, head))
-
+                
                 if int(message['process-code']) == 40:  #device registration
                     thread.start_new_thread(server.register_device, (c, head))
 
@@ -33,5 +33,16 @@ while True:
 
                 if int(message['process-code']) == 94:  #check responsing for emergency event
                     thread.start_new_thread(server.check_emergency_response, (c, head))
-            
 
+   except KeyboardInterrupt:
+            print 'exit program.'
+            c.close()
+            s.close()
+            sys.exit()
+   except:
+            print sys.exc_info()
+            server.send_self_event(1, str(sys.exc_info()))
+            c.close()
+            s.close()
+            s = server.init_socket()
+            
