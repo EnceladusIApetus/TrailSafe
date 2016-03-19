@@ -1,11 +1,11 @@
-from lib import network, header, device
-import socket, os, sys, json
+from lib import network, header, device, server
+import socket, os, sys, json, thread
 
-def run_server():
-        
-    s = server.init_socket()
-    print 'log: server is running'
+thread.start_new_thread(network.auto_update_status, ())
+while(True):
     try:
+        s = server.init_socket()
+        print 'log: server is running'
         while True:
             c, addr = s.accept()
             c.settimeout(5)
@@ -15,15 +15,14 @@ def run_server():
 
             if int(head['process-code']) == 21:
                 network.forward_message(c, 12345, 5, head)
-                    
+                        
     except KeyboardInterrupt:
         print 'exit program.'
-        c.close()
-        s.close()
         sys.exit()
     except:
+        report = {}
+        report['detail'] = 'an eror has occured in part of server'
+        report['sys-info'] = str(sys.exc_info())
+        network.send_event(1, json.dumps(report))
         print 'unexpected error: ', sys.exc_info()
-        network.send_event(1, str(sys.exc_info()))
-        c.close()
-        s.close()
         s = server.init_socket()

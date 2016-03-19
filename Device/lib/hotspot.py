@@ -1,4 +1,4 @@
-import device
+import device, os, connectNode, network, time, thread, server
 
 def choose_gateway():
     chosen_gateway = None
@@ -22,3 +22,35 @@ def replace_setting(old_gateway, self_gateway):
     interface_file.close()
     dhcpd_file.write(filedata_dhcpd)
     dhcpd_file.close()
+
+def run_hotspot():
+    device.set_config('hotspot-status', 'not ready')
+    os.popen('pkill -f "hostapd"')
+    os.popen('pkill -f "server.py"')
+    print os.popen('ifdown wlan1').read()
+    while connectNode.connect_node() == False:
+        print 'error: connect connect to server connected ssid'
+    self_gateway = choose_gateway()
+    print 'chosen gateway: ' + self_gateway
+    old_gateway = device.get_config('self-defaultgateway')
+    device.set_config('self-defaultgateway', self_gateway)
+    replace_setting(old_gateway, self_gateway)
+    print os.popen('ifup wlan1').read()
+    print os.popen('ifconfig wlan1 ' + self_gateway).read()
+    print os.popen('service isc-dhcp-server start').read()
+    device.set_config('hotspot-status', 'ready')
+
+def start_hotspot():
+    run_hotspot()
+    
+    while(True):
+        try:
+            if network.test_server_connection() is not True:
+                print 'connection is aborted'
+                run_hotspot()
+                        
+            time.sleep(5)
+        except:
+            print 'an error has occured while connecting to other node'
+
+    

@@ -103,14 +103,14 @@ def init_socket():
         report['sys-info'] = str(sys.exc_info())
         send_self_event(1, json.dumps(report))
 
-def auto_update_self_status(interval):
-    try:
-        while(1):
+def auto_update_self_status():
+    while(1):
+        try:
             update_self_status()
-        time.sleep(interval)
-    except:
-        print sys.exc_info()
-        report = {}
-        report['detail'] = 'an error has occured while updating self status'
-        report['sys-info'] = str(sys.exc_info())
-        send_self_event(1, json.dumps(report))
+            time.sleep(device.get_config('update-status-interval'))
+        except:
+            print sys.exc_info()
+            report = {}
+            report['detail'] = 'an error has occured while updating self status'
+            report['sys-info'] = str(sys.exc_info())
+            send_self_event(1, json.dumps(report))
