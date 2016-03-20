@@ -1,4 +1,4 @@
-import socket, struct, os, sys, header, json, device, httplib, urllib
+import socket, struct, os, sys, header, json, device, httplib, urllib, time
 
 def get_defaultgateway_hex(interface):
     route = "/proc/net/route"
@@ -97,3 +97,15 @@ def send_event(event_type, detail):
 
 def check_emergency_response():
     print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.check_emergency_response()))
+
+def auto_update_status():
+    while(1):
+        try:
+            update_status()
+            time.sleep(device.get_config('update-status-interval'))
+        except:
+            print sys.exc_info()
+            report = {}
+            report['detail'] = 'an error has occured while updating self status'
+            report['sys-info'] = str(sys.exc_info())
+            send_event(1, json.dumps(report))

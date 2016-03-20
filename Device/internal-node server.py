@@ -2,7 +2,7 @@ from lib import network, header, device, server
 import json, thread, sys
 
 s = server.init_socket()
-thread.start_new_thread(server.auto_update_self_status, (0.5, ))
+thread.start_new_thread(server.auto_update_self_status, ())
 print 'log: server is running'
 while True:
    try:
@@ -36,13 +36,12 @@ while True:
 
    except KeyboardInterrupt:
             print 'exit program.'
-            c.close()
-            s.close()
             sys.exit()
    except:
             print sys.exc_info()
-            server.send_self_event(1, str(sys.exc_info()))
-            c.close()
-            s.close()
+            report = {}
+            report['detail'] = 'an eror has occured in part of server'
+            report['sys-info'] = str(sys.exc_info())
+            server.send_self_event(1, json.dumps(report))
             s = server.init_socket()
             

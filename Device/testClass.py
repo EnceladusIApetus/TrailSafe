@@ -1,4 +1,4 @@
-from lib import jsonfile, header, network, server
-import socket, json
+from lib import jsonfile, header, network
+import socket, json, server
 
-print server.send_self_event(1, 'hihi')
+server.run_server()

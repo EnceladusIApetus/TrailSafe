@@ -28,5 +28,6 @@ def connect_node():
         print 'chosen ssid: ' + chosen_ssid.ssid
         wifi_lib.connect_wifi(chosen_ssid)    
         device.set_config('node-defaultgateway', network.get_defaultgateway(interface))
+        print 'registration'
         network.register_device()
 
