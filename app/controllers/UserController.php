@@ -8,6 +8,11 @@ class UserController extends BaseController
 		return User::find(Input::get('user-id'));
 	}
 
+	public function getAllUser()
+	{
+		return User::all();
+	}
+
 	public function register()
 	{
 		$input = Input::all();

@@ -120,12 +120,12 @@ class DeviceController extends BaseController
 
 			switch ($message['device-type']) {
 				case 'EN':
-					Node::find($device_id)->genEvent($event_type, $event_detail);
+					Node::find($device_id)->genEvent($event_detail);
 					$response = CodeDescriptor::getResponseHeader(11);
 					break;
 
 				case 'IN':
-					Node::find($device_id)->genEvent($event_type, $event_detail);
+					Node::find($device_id)->genEvent($event_detail);
 					$response = CodeDescriptor::getResponseHeader(11);
 					break;
 

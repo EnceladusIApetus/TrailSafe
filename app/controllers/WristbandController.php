@@ -33,9 +33,12 @@ class WristbandController extends BaseController
 
 		$wristband = Wristband::find($id);
 		if(isset($wristband)) {
-			$event = $wristband->event()->get()->pop();
+			$event = $wristband->event()->where('type', '=', 1)->get()->pop();
 			$response = CodeDescriptor::getResponseHeader(11);
-			$response = $event->status;
+			if($event->status == 1)
+				$response['emergency-status'] = 93;
+			else
+				$response['emergency-status'] = 95;
 		}
 		else
 			$response = CodeDescriptor::getResponseHeader(11);
@@ -59,8 +62,21 @@ class WristbandController extends BaseController
 		$wristband = Wristband::find(Input::get('device-id'));
 		$emerge_events = $wristband->event()->get()->pop();
 
-		if(isset($emerge_events) && $emerge_events->status == 0) {
+		if(isset($emerge_events) && $emerge_events->status == 1) {
 			$wristband->updateEmergeSafeStatus();
+			return 'true';
+		}
+
+		return 'false';
+	}
+
+	public function	responseEmergency()
+	{
+		$wristband = Wristband::find(Input::get('device-id'));
+		$emerge_events = $wristband->event()->where('type', '=', 1)->get()->pop();
+
+		if(isset($emerge_events) && $emerge_events->status == 0) {
+			$wristband->responseEmergeStatus();
 			return 'true';
 		}
 

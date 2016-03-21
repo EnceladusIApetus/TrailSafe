@@ -33,6 +33,7 @@ Route::group(array('prefix' => 'user/'), function(){
 	Route::get('register', 'UserController@register');
 	Route::get('unregister', 'UserController@unregister');
 	Route::any('find_by_id', 'UserController@findByID');
+	Route::get('get_all_user', 'UserController@getAllUser');
 });
 
 Route::group(array('prefix' => 'device/'), function(){
@@ -55,6 +56,7 @@ Route::group(array('prefix' => 'wristband/'), function(){
 	Route::get('getwristbands', 'WristbandController@getWristbandsAroundNode');
 	Route::any('check_response', 'WristbandController@checkEmergencyResponse');
 	Route::any('in_danger', 'WristbandController@getDeviceInDanger');
+	Route::any('response_emergency', 'WristbandController@responseEmergency');
 	Route::any('update_safe_device', 'WristbandController@updateDeviceInSafe');
 	Route::any('find_by_id', 'WristbandController@findByID');
 });
