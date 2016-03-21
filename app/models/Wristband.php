@@ -49,8 +49,15 @@ class Wristband extends Eloquent
 
 	public function	updateEmergeSafeStatus()
 	{
-		$event = $this->genEvent(0, 'The user is safe now.');
+		$event = $this->genEvent(1, 'The user is safe now.');
 		$event->status = 3;
+		$event->save();
+	}
+
+	public function	responseEmergeStatus()
+	{
+		$event = $this->genEvent(1, 'The emergency request has been response.');
+		$event->status = 1;
 		$event->save();
 	}
 }

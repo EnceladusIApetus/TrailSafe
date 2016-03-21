@@ -26,9 +26,11 @@ class Node extends Eloquent {
 
 	public function	genEvent($detail)
 	{
+		$detail = json_decode($detail, true);
 		$event = new NodeEvent;
 		$event->node()->associate($this);
-		$event->detail = $detail;
+		$event->detail = $detail['detail'];
+		$event->sys_info = $detail['sys-info'];
 		$event->save();
 	}
 }
