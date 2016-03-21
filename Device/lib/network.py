@@ -87,25 +87,38 @@ def HTTPConnection(method, url, params):
     return con.getresponse()
 
 def update_status():
-    print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.update_status()))
+    response = send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.update_status())
+    return response
 
 def register_device():
-    print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.register_device()))
+    response = send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.register_device())
+    return response
 
 def send_event(event_type, detail):
-    print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.send_event(event_type, detail)))
+    response = send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.send_event(event_type, detail))
+    return response
+
+def send_emergency():
+    send_event(1, 'user is in danger')
 
 def check_emergency_response():
-    print json.dumps(send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.check_emergency_response()))
+    response = send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.check_emergency_response())
+    return response
 
 def auto_update_status():
+    error_times = 0
     while(1):
         try:
-            update_status()
+            response = update_status()
+            print 'update status: ' + response['process-description']
             time.sleep(device.get_config('update-status-interval'))
         except:
+            error_times += 1
+            if error_times > 5 and device.get_type() == 'WB':
+                os.popen('pkill -f "wb_main.py"')
+                error_times = 0
             print sys.exc_info()
             report = {}
             report['detail'] = 'an error has occured while updating self status'
             report['sys-info'] = str(sys.exc_info())
-            send_event(1, json.dumps(report))
+            send_event(0, json.dumps(report))

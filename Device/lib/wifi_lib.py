@@ -38,5 +38,5 @@ def connect_wifi(ssid):
     passkey = device.get_config('passkey')
     scheme = Scheme.find(interface, ssid.ssid)
     if scheme is None:
-            scheme = create_scheme(interface, ssid_list[x], ssid_list[x].ssid, passkey)
+            scheme = create_scheme(interface, ssid, ssid.ssid, passkey)
     scheme.activate()

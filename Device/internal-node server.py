@@ -42,6 +42,6 @@ while True:
             report = {}
             report['detail'] = 'an eror has occured in part of server'
             report['sys-info'] = str(sys.exc_info())
-            server.send_self_event(1, json.dumps(report))
+            server.send_self_event(0, json.dumps(report))
             s = server.init_socket()
             

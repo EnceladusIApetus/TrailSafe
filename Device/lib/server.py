@@ -11,7 +11,7 @@ def register_device(c, head):
         report = {}
         report['detail'] = 'cannot register device'
         report['sys-info'] = str(sys.exc_info())
-        send_self_event(1, json.dumps(report))
+        send_self_event(0, json.dumps(report))
 
 def update_status(c, head):
     try:
@@ -23,7 +23,7 @@ def update_status(c, head):
         report = {}
         report['detail'] = 'cannot update requestors\' status'
         report['sys-info'] = str(sys.exc_info())
-        send_self_event(1, json.dumps(report))
+        send_self_event(0, json.dumps(report))
 
 def update_self_status():
     try:
@@ -36,7 +36,7 @@ def update_self_status():
         report = {}
         report['detail'] = 'cannot update self status'
         report['sys-info'] = str(sys.exc_info())
-        send_self_event(1, json.dumps(report))
+        send_self_event(0, json.dumps(report))
 
 def send_self_event(event_type, detail):
     head = json.loads(header.send_code('90'))
@@ -60,7 +60,7 @@ def check_emergency_response(c, head):
         report = {}
         report['detail'] = 'an error has occured while checking an emergency response'
         report['sys-info'] = str(sys.exc_info())
-        send_self_event(1, json.dumps(report))
+        send_self_event(0, json.dumps(report))
 
 def send_back(c, response_raw):
     try:
@@ -76,7 +76,7 @@ def send_back(c, response_raw):
         report = {}
         report['detail'] = 'cannot send back response to requestor'
         report['sys-info'] = str(sys.exc_info())
-        send_self_event(1, json.dumps(report))
+        send_self_event(0, json.dumps(report))
 
 def test_server_connection(c, head):
     try:
@@ -87,7 +87,7 @@ def test_server_connection(c, head):
         report = {}
         report['detail'] = 'cannot test connection between server and node layer'
         report['sys-info'] = str(sys.exc_info())
-        send_self_event(1, json.dumps(report))
+        send_self_event(0, json.dumps(report))
 
 def init_socket():
     try:
@@ -101,7 +101,7 @@ def init_socket():
         report = {}
         report['detail'] = 'cannot initial socket'
         report['sys-info'] = str(sys.exc_info())
-        send_self_event(1, json.dumps(report))
+        send_self_event(0, json.dumps(report))
 
 def auto_update_self_status():
     while(1):
@@ -113,4 +113,4 @@ def auto_update_self_status():
             report = {}
             report['detail'] = 'an error has occured while updating self status'
             report['sys-info'] = str(sys.exc_info())
-            send_self_event(1, json.dumps(report))
+            send_self_event(0, json.dumps(report))
