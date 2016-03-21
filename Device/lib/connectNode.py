@@ -27,7 +27,9 @@ def connect_node():
         chosen_ssid = wifi_lib.get_highest_signal_ssid(internet_ssid)
         print 'chosen ssid: ' + chosen_ssid.ssid
         wifi_lib.connect_wifi(chosen_ssid)    
+
         device.set_config('node-defaultgateway', network.get_defaultgateway(interface))
-        print 'registration'
+        node_info = network.request_device_info()
+        device.set_config('registration-node-id', node_info['device-id'])
         network.register_device()
 

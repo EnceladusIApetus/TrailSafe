@@ -73,3 +73,6 @@ def send_code(code):
 	x['process-code'] = code
 	x['process-description'] = code_descriptor.get_description(code)
 	return json.dumps(x)
+
+def request_device_info():
+        return send_code('100')

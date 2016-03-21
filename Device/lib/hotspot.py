@@ -23,7 +23,7 @@ def replace_setting(old_gateway, self_gateway):
     dhcpd_file.write(filedata_dhcpd)
     dhcpd_file.close()
 
-def run_hotspot():
+def prepare_running_hotspot():
     device.set_config('hotspot-status', 'not ready')
     os.popen('pkill -f "hostapd"')
     os.popen('pkill -f "server.py"')
@@ -38,17 +38,17 @@ def run_hotspot():
     print os.popen('ifup wlan1').read()
     print os.popen('ifconfig wlan1 ' + self_gateway).read()
     print os.popen('service isc-dhcp-server start').read()
-    device.set_config('hotspot-status', 'ready')
+    device.set_config('hotspot-status', 'ready to run')
 
-def start_hotspot():
+def prepare_hotspot():
     run_hotspot()
     
     while(True):
         try:
             if network.test_server_connection() is not True:
                 print 'connection is aborted'
-                run_hotspot()
-                        
+                prepare_running_hotspot()
+                
             time.sleep(5)
         except:
             print 'an error has occured while connecting to other node'
