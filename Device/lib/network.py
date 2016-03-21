@@ -87,22 +87,26 @@ def HTTPConnection(method, url, params):
     return con.getresponse()
 
 def update_status():
-    response = send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.update_status())
+    device_info = device.get_all_config()
+    response = send_message_to_server(device_info['port'], device_info['client-timeout'], header.update_status())
     return response
 
 def register_device():
-    response = send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.register_device())
+    device_info = device.get_all_config()
+    response = send_message_to_server(device_info['port'], device_info['client-timeout'], header.register_device())
     return response
 
 def send_event(event_type, detail):
-    response = send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.send_event(event_type, detail))
+    device_info = device.get_all_config()
+    response = send_message_to_server(device_info['port'], device_info['client-timeout'], header.send_event(event_type, detail))
     return response
 
 def send_emergency():
     send_event(1, 'user is in danger')
 
 def check_emergency_response():
-    response = send_message_to_server(device.get_config('port'), device.get_config('client-timeout'), header.check_emergency_response())
+    device_info = device.get_all_config()
+    response = send_message_to_server(device_info['port'], device_info['client-timeout'], header.check_emergency_response())
     return response
 
 def auto_update_status():
@@ -133,7 +137,8 @@ def reply_device_info(c):
     c.close()
 
 def request_device_info():
-    s = create_socket(get_defaultgateway('wlan0'), device.get_config('port'), device.get_config('client-timeout')):
+    device_info = device.get_all_config()
+    s = create_socket(get_defaultgateway('wlan0'), device_info['port'], device_info['client-timeout'])
     s.send(header.request_device_info())
     return json.loads(s.recv(1024))
     

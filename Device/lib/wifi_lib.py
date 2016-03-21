@@ -14,18 +14,23 @@ def get_highest_signal_ssid(ssid_list):
     return chosen_ssid
 
 def get_ssid_by_name(ssid_name, cell_list):
+    device_info = device.get_all_config()
     target_ssid = []
     for cell in cell_list:
-        if ssid_name in cell.ssid and cell.ssid != device.get_config('device-SSID'):
+        if ssid_name in cell.ssid:
+            if device_info['device-type'] == 'EN' and cell.ssid == device_info['device-SSID']:
+                break
             target_ssid.append(cell)
     return target_ssid
 
 def get_server_connected_ssid(ssid_list):
+    device_info = device.get_all_config()
+    
     if ssid_list is None:
         return None
     
-    interface = device.get_config('client-interface')
-    passkey = device.get_config('passkey')
+    interface = device_info['client-interface']
+    passkey = device_info['passkey']
     server_connected_ssid = []
     for x in range (0, len(ssid_list)):
         connect_wifi(ssid_list[x])
@@ -34,8 +39,10 @@ def get_server_connected_ssid(ssid_list):
     return server_connected_ssid
 
 def connect_wifi(ssid):
-    interface = device.get_config('client-interface')
-    passkey = device.get_config('passkey')
+    device_info = device.get_all_config()
+                            
+    interface = device_info['client-interface']
+    passkey = device_info['passkey']
     scheme = Scheme.find(interface, ssid.ssid)
     if scheme is None:
             scheme = create_scheme(interface, ssid, ssid.ssid, passkey)
