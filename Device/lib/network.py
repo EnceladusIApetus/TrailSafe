@@ -122,3 +122,18 @@ def auto_update_status():
             report['detail'] = 'an error has occured while updating self status'
             report['sys-info'] = str(sys.exc_info())
             send_event(0, json.dumps(report))
+
+def reply_device_info(c):
+    response = {}
+    response['process-code'] = 11
+    response['device-id'] = device.get_id()
+    response['device-type'] = device.get_type()
+    response['device-full-id'] = device.get_full_id()
+    c.send(json.dumps(response))
+    c.close()
+
+def request_device_info():
+    s = create_socket(get_defaultgateway('wlan0'), device.get_config('port'), device.get_config('client-timeout')):
+    s.send(header.request_device_info())
+    return json.loads(s.recv(1024))
+    

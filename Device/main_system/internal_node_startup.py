@@ -18,6 +18,9 @@ while True:
     	if int(head['process-code']) == 20:
             network.receive_file(c, '/home/pi/TrailSafe/files/', 1024, head)
 
+         if int(head['process-code']) == 100:
+                network.reply_device_info(c)
+
         if message is not None:
                 if int(message['process-code']) == 60:  #test server connection
                     thread.start_new_thread(server.test_server_connection, (c, head))

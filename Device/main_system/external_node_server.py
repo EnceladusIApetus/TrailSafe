@@ -15,6 +15,9 @@ while(True):
 
             if int(head['process-code']) == 21:
                 network.forward_message(c, 12345, 5, head)
+
+            if int(head['process-code']) == 100:
+                network.reply_device_info(c)
                         
     except KeyboardInterrupt:
         print 'exit program.'
