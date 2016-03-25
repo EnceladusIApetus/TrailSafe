@@ -37,6 +37,9 @@ while True:
                 if int(message['process-code']) == 94:  #check responsing for emergency event
                     thread.start_new_thread(server.check_emergency_response, (c, head))
 
+		if int(message['process-code']) == 110: #check risk status of each own device
+		    thread.start_new_thread(server.check_risk_status, (c, head))
+
    except KeyboardInterrupt:
             print 'exit program.'
             sys.exit()
