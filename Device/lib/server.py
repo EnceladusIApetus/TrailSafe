@@ -114,3 +114,15 @@ def auto_update_self_status():
             report['detail'] = 'an error has occured while updating self status'
             report['sys-info'] = str(sys.exc_info())
             send_self_event(0, json.dumps(report))
+
+def check_risk_status(c, head):
+    try:
+        head['path'].append(device.get_full_id())
+        response_raw = network.HTTPConnection('POST', '/wristband/check_risk_status', head)
+        send_back(c, response_raw)
+    except:
+        print sys.exc_info()
+        report = {}
+        report['detail'] = 'cannot check risk status for wristband which requested or send back response'
+        report['sys-info'] = str(sys.exc_info())
+        send_self_event(0, json.dumps(report))

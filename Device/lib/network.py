@@ -91,6 +91,11 @@ def update_status():
     response = send_message_to_server(device_info['port'], device_info['client-timeout'], header.update_status())
     return response
 
+def check_risk_status():
+    device_info = device.get_all_config()
+    response = send_message_to_server(device_info['port'], device_info['client-timeout'], header.check_risk_status())
+    return response
+
 def register_device():
     device_info = device.get_all_config()
     response = send_message_to_server(device_info['port'], device_info['client-timeout'], header.register_device())
@@ -111,15 +116,22 @@ def check_emergency_response():
 
 def auto_update_status():
     error_times = 0
-    while(1):
+    while True:
         try:
+	    device_info = device.get_all_config()
             response = update_status()
             print 'update status: ' + response['process-description']
-            time.sleep(device.get_config('update-status-interval'))
+	    if device_info['device-type'] == 'WB':
+		response = check_risk_status()
+		if response['process-code'] == 111:
+		    gpio.gen_signal(gpio.get_pin('led-alert'), device_info['update-status-interval'], 0.5)
+	    else:
+                time.sleep(device_info['update-status-interval'])
         except:
             error_times += 1
-            if error_times > 5 and device.get_type() == 'WB':
+            if error_times > int(device.get_config('maximum-allowed-error')) and device.get_type() == 'WB':
                 os.popen('pkill -f "wb_main.py"')
+                device.set_config('server-connection', 'not connect')
                 error_times = 0
             print sys.exc_info()
             report = {}

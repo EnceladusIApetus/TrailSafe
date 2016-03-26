@@ -68,6 +68,15 @@ def check_emergency_response():
         x['device-full-id'] = device.get_full_id()
         return json.dumps(x)
 
+def check_risk_status():
+        x = {}
+        x['process-code'] = 110
+        x['process-description'] = code_descriptor.get_description('110')
+        x['device-id'] = device.get_id()
+        x['device-type'] = device.get_type();
+        x['device-full-id'] = device.get_full_id()
+        return json.dumps(x)
+
 def send_code(code):
 	x = {}
 	x['process-code'] = code

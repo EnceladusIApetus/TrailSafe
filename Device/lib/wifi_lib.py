@@ -47,3 +47,6 @@ def connect_wifi(ssid):
     if scheme is None:
             scheme = create_scheme(interface, ssid, ssid.ssid, passkey)
     scheme.activate()
+
+def get_trailsafe_ssid():
+    return get_ssid_by_name('TrailSafe', Cell.all(device.get_config('client-interface')))
