@@ -32,7 +32,7 @@ class Wristband extends Eloquent
 
 	public function	genEvent($event_type, $detail)
 	{
-		$oldEvent = $this->event()->get()->pop();
+		$oldEvent = $this->event()->where('type', '=', $event_type)->get()->pop();
 		if($oldEvent != null && $oldEvent->status == 0) {
 			$oldEvent->status = 2;
 			$oldEvent->save();

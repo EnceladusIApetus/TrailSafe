@@ -93,4 +93,25 @@ class NodeController extends BaseController {
 		return json_encode($response);
 	}
 
+	public function getNodeRegistration()
+	{
+		$node = Node::find(Input::get('device-id'));
+		$registrations = $node->registration()->get()->sortByDesc('id')->take(Input::get('amount'));
+		return $registrations;
+	}
+
+	public function getNodeErrorEvent()
+	{
+		$node = Node::find(Input::get('device-id'));
+		$events = $node->event()->get()->sortByDesc('id')->take(Input::get('amount'));
+		return $events;
+	}
+
+	public function getNodeByCoordinate()
+	{
+		$node = Node::where('latitude', '=', Input::get('latitude'))
+					->orWhere('longitude', '=', Input::get('longitude'))
+					->get()[0];
+		return $node;
+	}
 }

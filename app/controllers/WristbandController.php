@@ -82,4 +82,20 @@ class WristbandController extends BaseController
 
 		return 'false';
 	}
+
+	public function checkRiskStatus()
+	{
+		$message = json_decode(Input::get('message'), true);
+		$wristband = Wristband::find($message['device-id']);
+		$node = $wristband->registration()->get()->pop()->registration_node()->get()[0];
+
+		$response = CodeDescriptor::getResponseHeader(11);
+
+		if($node->risk_status == 1)
+			$response['risk-status'] = 111;
+		else
+			$response['risk-status'] = 112;
+
+		return json_encode($response);
+	}
 }
