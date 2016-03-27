@@ -114,4 +114,36 @@ class NodeController extends BaseController {
 					->get()[0];
 		return $node;
 	}
+
+	public function warnNode()
+	{
+		$node = Node::find(Input::get('device-id'));
+		$node->risk_status = 1;
+		$node->save();
+	}
+
+	public function warnAllNodes()
+	{
+		$nodes = Node::all();
+		foreach ($nodes as $key => $node) {
+			$node->risk_status = 1;
+			$node->save();
+		}
+	}
+
+	public function cancelWarningNode()
+	{
+		$node = Node::find(Input::get('device-id'));
+		$node->risk_status = 0;
+		$node->save();
+	}
+
+	public function cancelWarningAllNodes()
+	{
+		$nodes = Node::all();
+		foreach ($nodes as $key => $node) {
+			$node->risk_status = 0;
+			$node->save();
+		}
+	}
 }

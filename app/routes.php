@@ -54,6 +54,10 @@ Route::group(array('prefix' => 'node/'), function(){
 	Route::any('registration_log', 'NodeController@getNodeRegistration');
 	Route::any('error_log', 'NodeController@getNodeErrorEvent');
 	Route::any('find_by_coordinate', 'NodeController@getNodeByCoordinate');
+	Route::any('warn_node', 'NodeController@warnNode');
+	Route::any('warn_all_nodes', 'NodeController@warnAllNodes');
+	Route::any('cancel_warning_node', 'NodeController@cancelWarningNode');
+	Route::any('cancel_warning_all_nodes', 'NodeController@cancelWarningAllNodes');
 });
 
 Route::group(array('prefix' => 'wristband/'), function(){
