@@ -3,7 +3,7 @@ from lib import jsonfile, network, header, device, wifi_lib
 import socket, json
 
 def connect_node():
-        try:
+	try:        
                 interface = device.get_config('client-interface')
             
                 target_ssid = wifi_lib.get_ssid_by_name(device.get_config('target-SSIDPrefix'), Cell.all(interface))
@@ -34,6 +34,6 @@ def connect_node():
                 network.register_device()
                 device.set_config('server-connection', 'connected')
                 return True
-        except:
+	except:
                 return False                
 
