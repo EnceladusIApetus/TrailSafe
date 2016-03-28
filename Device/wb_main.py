@@ -7,27 +7,30 @@ gpio.set_input_pulldown(gpio.get_pin('switch'))
 gpio.on(gpio.get_pin('led-main-system'))
 gpio.off(gpio.get_pin('led-alert'))
 gpio.off(gpio.get_pin('led-emergency'))
-gpio.off(gpio.get_pin('led-signal-coverage'))
+#gpio.off(gpio.get_pin('led-signal-coverage'))
 
 
 def is_coverage():
-    signal = -150
-    ssids = wifi_lib.get_trailsafe_ssid()
-    print ssids
-    for ssid in ssids:
-	if ssid.signal > signal:
-	    signal = ssid.signal
-	print 'signal: ' +  str(ssid.signal)
-
-    signal = int(device.get_config('test-signal'))
-    if signal > -120:
-        gpio.on(gpio.get_pin('led-signal-coverage'))
-    else:
-        gpio.off(gpio.get_pin('led-signal-coverage'))
-    device.set_config('signal-coverage-checking', signal)
-    threading.Timer(5.0, is_coverage).start()
-
-
+    try:
+	signal = -150
+    	ssids = wifi_lib.get_trailsafe_ssid()
+    	print ssids
+    	for ssid in ssids:
+	    if ssid.signal > signal:
+	    	signal = ssid.signal
+	    print 'signal: ' +  str(ssid.signal)
+    
+    	#signal = int(device.get_config('signal-coverage-checking'))
+    	if signal > -120:
+	    gpio.on(gpio.get_pin('led-signal-coverage'))
+	    print 'high signal'
+    	else:
+	    gpio.off(gpio.get_pin('led-signal-coverage'))
+	    print 'low signal'
+    	device.set_config('signal-coverage-checking', signal)
+    	threading.Timer(5.0, is_coverage).start()
+    except:
+    	threading.Timer(5.0, is_coverage).start()	
 
 def check_emergency():
     if device.get_config('wristband-status') == 'normal':
@@ -47,6 +50,13 @@ def auto_check_emergency():
 	    threading.Timer(2, auto_check_emergency).start()
          except:
             print 'an error has occured while checking emergency response'
+	    threading.Timer(2, auto_check_emergency).start()
+	    report = {}
+            report['detail'] = 'an error has occured while checking emergency response'
+            report['sys-info'] = str(sys.exc_info())
+            network.send_event(0, json.dumps(report))
+            print 'unexpected error: ', sys.exc_info()
+
 
 def emergency(channel):
     network.send_emergency()
@@ -54,7 +64,7 @@ def emergency(channel):
 
 GPIO.add_event_detect(gpio.get_pin('switch'), GPIO.FALLING, callback=emergency, bouncetime=300)
 
-is_coverage()
+#is_coverage()
 print 'test'
 #gpio.on(gpio.get_pin('led-signal-coverage'))
 while(True):

@@ -1,4 +1,4 @@
-import socket, struct, os, sys, header, json, device, httplib, urllib, time
+import socket, struct, os, sys, header, json, device, httplib, urllib, time, gpio
 
 def get_defaultgateway_hex(interface):
     route = "/proc/net/route"
@@ -94,6 +94,9 @@ def update_status():
 def check_risk_status():
     device_info = device.get_all_config()
     response = send_message_to_server(device_info['port'], device_info['client-timeout'], header.check_risk_status())
+    print 'response: ' + str(response['risk-status'])
+    device.set_config('risk-status', response['risk-status'])
+
     return response
 
 def register_device():
@@ -122,9 +125,12 @@ def auto_update_status():
             response = update_status()
             print 'update status: ' + response['process-description']
 	    if device_info['device-type'] == 'WB':
+		device.set_config('risk-status', 5)
 		response = check_risk_status()
-		if response['process-code'] == 111:
-		    gpio.gen_signal(gpio.get_pin('led-alert'), device_info['update-status-interval'], 0.5)
+
+		if int(response['risk-status']) == 111:
+		    print 'warning!!!'
+		    gpio.gen_signal(gpio.get_pin('led-alert'), 5, 0.5)
 	    else:
                 time.sleep(device_info['update-status-interval'])
         except:
